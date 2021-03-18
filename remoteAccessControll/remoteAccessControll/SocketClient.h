@@ -113,7 +113,23 @@ public:
 		recvbuf = std::vector<char>(recvbuflen, '\0');
 		return result;
 	}
-	
+	std::vector<char> sendData(const std::vector<char>& sendData)
+	{
+		// Send an initial buffer
+		iResult = send(ConnectSocket, sendData.data(), sendData.size(), 0);
+		if (iResult == SOCKET_ERROR) {
+			printf("send failed with error: %d\n", WSAGetLastError());
+			closesocket(ConnectSocket);
+			WSACleanup();
+			return {};
+		}
+
+		printf("Bytes Sent: %ld\n", iResult);
+		receiveResponse();
+		auto result = std::vector<char>(recvbuf.begin(), recvbuf.end());
+		recvbuf = std::vector<char>(recvbuflen, '\0');
+		return result;
+	}
 	bool closeConnection()
 	{
 		// shutdown the connection since no more data will be sent

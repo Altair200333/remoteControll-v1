@@ -148,6 +148,24 @@ int main()
 						}
 					}
 				}
+				else if(data[0] == 's' && data[1] == 'e' && data[2] == 'n' && data[3] == 'd')
+				{
+					int nameLength = *reinterpret_cast<int*>(&data[4]);
+
+					std::cout << "File received; bytes - " << nameLength << "\n";
+					
+					std::vector<char>::const_iterator first = data.begin() + 8;
+					std::vector<char>::const_iterator last = data.begin() + nameLength + 8;
+					std::vector<char> name(first, last);
+					name.push_back(0);
+					std::string filename = std::string(name.data());
+					std::cout << "received " << filename << "\n";
+
+					int filesize = *reinterpret_cast<int*>(&data[nameLength + 8]);
+					
+					std::ofstream file(filename, std::ios::binary);
+					file.write(&data[nameLength + 12], filesize);
+				}
 				return std::make_pair(true, respArray);
 		});
 
